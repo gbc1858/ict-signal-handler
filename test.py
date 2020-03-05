@@ -8,4 +8,4 @@ for file in settings.FILE_LIST:
         ICT_signal.ict_frame_data()
 
         charge, std = ICT_signal.get_ict_charge()
-        ICT_signal.plot_ict_data()
+        # ICT_signal.plot_ict_data()

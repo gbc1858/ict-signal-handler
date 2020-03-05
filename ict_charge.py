@@ -20,6 +20,10 @@ class ProcessIctSignal:
         self.dt = []
 
     def ict_frame_data(self):
+        """
+        Reorganize the scope raw data file, and remove all headers etc.
+        :return: volt lists and time lists of all frames
+        """
         volts_ls_all = []
         time_ls_all = []
         frame_number = 0
@@ -55,18 +59,30 @@ class ProcessIctSignal:
     #         return self.volt_list_all, self.time_list_all
 
     def get_volt_offset(self):
-        # Get signal offset from the first couple of elements
+        """
+        Get signal offset from the first couple of elements
+        :return: a list of all frame offsets
+        """
+
         for i in range(len(self.volt_list_all)):
             offset_single_frame = np.mean(self.volt_list_all[i][:settings.AVERAGE_NUMBER])
             self.offset.append(offset_single_frame)
 
     def integration_step(self):
-        # Get time step for integration.
+        """
+        Get time step for integration.
+        :return: a list of all time step for integration use
+        """
+
         for i in range(len(self.time_list_all)):
             dt_single_frame = abs(self.time_list_all[i][1] - self.time_list_all[i][0])
             self.dt.append(dt_single_frame)
 
     def get_ict_charge(self):
+        """
+        Get averaged charge and the corresponding std from ICT signals.
+        :return: a ICT charge float and a ICT std float.
+        """
         charge_list_all = []
         self.get_volt_offset()
         self.integration_step()
@@ -76,7 +92,7 @@ class ProcessIctSignal:
             charge = simps(y=np.array(volt_w_offset[i]), dx=float(self.dt[i]))
             charge_list_all.append(charge * 10 ** 12 / settings.ICT_CALIBRATION_FACTOR)  # charge in pC
 
-        # remove highest a few and lowest a few results.
+        # remove highest N and lowest M results.
         desired_charges = sorted(charge_list_all)[
                           settings.ICT_CUT_LOW_BOUNDARY: (len(charge_list_all) - settings.ICT_CUT_HIGH_BOUNDARY)]
         print('min charge  =>', np.max(desired_charges))
@@ -87,6 +103,10 @@ class ProcessIctSignal:
         return abs(np.mean(desired_charges)), np.std(desired_charges)
 
     def plot_ict_data(self):
+        """
+        Save all frames of scope data to a pdf.
+        :return:
+        """
         with PdfPages(self.file.split('.')[0] + '_ICT_raw.pdf') as pdf:
             for i in range(len(self.volt_list_all)):
                 plt.plot(self.time_list_all[i], self.volt_list_all[i], c='b')
