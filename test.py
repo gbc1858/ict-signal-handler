@@ -7,3 +7,4 @@ for file in settings.FILE_LIST:
         ICT_signal = ProcessIctSignal(file, settings.FOLDER_PATH)
         volt_list_all, time_list_all = ICT_signal.ict_frame_data()
         charge, std = ICT_signal.get_ict_charge()
+        ICT_signal.plot_ict_data()

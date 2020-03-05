@@ -87,14 +87,14 @@ class ProcessIctSignal:
 
         return abs(np.mean(desired_charges)), np.std(desired_charges)
 
-    def plot_ict_data(self, file):
-        pdf = PdfPages(file.split('.')[0] + '_ICT_raw.pdf')
+    def plot_ict_data(self):
+        pdf = PdfPages(self.file.split('.')[0] + '_ICT_raw.pdf')
         for i in range(len(self.volt_list_all)):
             plt.plot(self.time_list_all[i], self.volt_list_all[i], c='b')
             plt.axhline(self.offset[i], c='darkorange', ls=':')
             plt.xlabel('Time (s)')
             plt.ylabel('Voltage (V)')
-            plt.title(file + "\nframe# %.1f (Offest = %.5f)" % (i + 1, self.offset[i]))
+            plt.title(self.file + "\nframe# %.1f (Offest = %.5f)" % (i + 1, self.offset[i]))
             pdf.savefig(bbox_inches='tight')
             plt.close()
         pdf.close()
